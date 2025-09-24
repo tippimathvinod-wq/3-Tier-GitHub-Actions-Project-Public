@@ -110,7 +110,7 @@ jobs:
           file: ./client/Dockerfile
   Trivy_Backend_Image_Scan:
        runs-on: ubuntu-latest
-       needs: Build_Backend_Image_And_Push
+       needs: Build_Frontend_Image_And_Push
        steps:
        - name: Run Trivy vulnerability scanner
          uses: aquasecurity/trivy-action@0.28.0
@@ -123,6 +123,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
   Trivy_Frontend_Image_Scan:
        runs-on: ubuntu-latest
+       needs: Trivy_Backend_Image_Scan
        needs: Build_Backend_Image_And_Push
        steps:
        - name: Run Trivy vulnerability scanner
