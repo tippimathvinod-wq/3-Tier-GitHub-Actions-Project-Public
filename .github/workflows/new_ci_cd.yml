@@ -8,7 +8,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  Compile:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,4 +20,42 @@ jobs:
       run: |
         cd client
         find . -name "*.js" -exec node --check {} +
+    - name: Backend Compilation (Syntax Check)
+      run: |
+        cd client
+        find . -name "*.js" -exec node --check {} +
+
+  Git_Leak_Scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Git_leak_setup
+      uses: gitleaks/gitleaks-action@v2
+    - name: Git_Leak_Scan
+      run: |
+        gitleaks detect --source ./client --exit-code 1
+        gitleaks detect --source ./api --exit-code 1
+  Trivy_Installation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trivy installation
+      run: |
+        sudo apt-get install wget gnupg
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+        echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update -y
+        sudo apt-get install trivy -y
+  Trivy_Fs_Scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH' 
+    
          
