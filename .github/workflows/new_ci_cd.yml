@@ -108,5 +108,31 @@ jobs:
           push: true
           tags: vinod969/frontend:latest
           file: ./client/Dockerfile
+  Trivy_Backend_Image_Scan:
+       runs-on: ubuntu-latest
+       needs: Build_Backend_Image_And_Push
+       steps:
+       - name: Run Trivy vulnerability scanner
+         uses: aquasecurity/trivy-action@0.28.0
+         with:
+          image-ref: vinod969/backend:latest
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+  Trivy_Frontend_Image_Scan:
+       runs-on: ubuntu-latest
+       needs: Build_Backend_Image_And_Push
+       steps:
+       - name: Run Trivy vulnerability scanner
+         uses: aquasecurity/trivy-action@0.28.0
+         with:
+          image-ref: vinod969/frontend:latest
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
     
          
