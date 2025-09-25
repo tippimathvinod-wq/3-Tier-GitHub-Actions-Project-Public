@@ -61,7 +61,7 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH' 
   Sonar_Scan_Backend:
-      runs-on: buntu-latest
+      runs-on: ubuntu-latest
       needs: Trivy_Fs_Scan
       steps:
       - name: checkout code
@@ -79,7 +79,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   Sonar_Scan_Frontend:
-      runs-on: buntu-latest
+      runs-on: ubuntu-latest
       needs: Sonar_Scan_Backend
       steps:
       - name: checkout code
